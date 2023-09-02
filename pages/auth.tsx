@@ -2,7 +2,6 @@ import axios from 'axios';
 import { useCallback, useState } from 'react';
 import { NextPageContext } from 'next';
 import { getSession, signIn } from 'next-auth/react';
-import { useRouter } from 'next/router';
 import { FcGoogle } from 'react-icons/fc';
 import { FaGithub } from 'react-icons/fa';
 
@@ -26,8 +25,6 @@ export async function getServerSideProps(context: NextPageContext) {
 }
 
 const Auth = () => {
-  const router = useRouter();
-
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
@@ -43,15 +40,12 @@ const Auth = () => {
       await signIn('credentials', {
         email,
         password,
-        redirect: false,
-        callbackUrl: '/'
+        callbackUrl: '/profiles'
       });
-
-      router.push('/');
     } catch (error) {
       console.log(error);
     }
-  }, [email, password, router]);
+  }, [email, password]);
 
   const register = useCallback(async () => {
     try {
@@ -71,7 +65,7 @@ const Auth = () => {
     <div className="relative h-full w-full bg-[url('/images/hero.jpg')] bg-no-repeat bg-center bg-fixed bg-cover">
       <div className="bg-black w-full h-full lg:bg-opacity-50">
         <nav className="px-12 py-5">
-          <img src="/images/Logo2.png" className="h-16" alt="Logo" />
+          <img src="/images/logo.png" className="h-12" alt="Logo" />
         </nav>
         <div className="flex justify-center">
           <div className="bg-black bg-opacity-70 px-16 py-16 self-center mt-2 lg:w-2/5 lg:max-w-md rounded-md w-full">
