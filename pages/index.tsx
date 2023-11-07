@@ -1,36 +1,26 @@
-import React from 'react';
-import { NextPageContext } from 'next';
-import { getSession } from 'next-auth/react';
-
+import React, { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Billboard from '@/components/Billboard';
 import MovieList from '@/components/MovieList';
 import InfoModal from '@/components/InfoModal';
-import useMovieList from '@/hooks/useMovieList';
-import useFavorites from '@/hooks/useFavorites';
 import useInfoModalStore from '@/hooks/useInfoModalStore';
 
-export async function getServerSideProps(context: NextPageContext) {
-  const session = await getSession(context);
-
-  if (!session) {
-    return {
-      redirect: {
-        destination: '/auth',
-        permanent: false,
-      }
-    }
-  }
-
-  return {
-    props: {}
-  }
-}
-
 const Home = () => {
-  const { data: movies = [] } = useMovieList();
-  const { data: favorites = [] } = useFavorites();
-  const {isOpen, closeModal} = useInfoModalStore();
+  const [movies, setMovies] = useState([]);
+  const [favorites, setFavorites] = useState([]);
+  const { isOpen, closeModal } = useInfoModalStore();
+
+  useEffect(() => {
+    fetch('/api/movies')
+      .then((response) => response.json())
+      .then((data) => setMovies(data))
+      .catch((error) => console.error('Error fetching movies:', error));
+
+    fetch('/api/favorites') 
+      .then((response) => response.json())
+      .then((data) => setFavorites(data))
+      .catch((error) => console.error('Error fetching favorites:', error));
+  }, []);
 
   return (
     <>
@@ -42,7 +32,7 @@ const Home = () => {
         <MovieList title="My List" data={favorites} />
       </div>
     </>
-  )
-}
+  );
+};
 
 export default Home;
